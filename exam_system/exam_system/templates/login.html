@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block anon %}<div class="login-wrap"><form method="post" class="card login-card p-4">
+<h4 class="mb-1"><i class="fa-solid fa-graduation-cap text-primary"></i> ExamHub</h4><p class="text-muted">{{ COLLEGE }} · Exam Management System</p>
+{% with m = get_flashed_messages(with_categories=true) %}{% for c,t in m %}<div class="alert alert-{{ c }}">{{ t }}</div>{% endfor %}{% endwith %}
+<input type="hidden" name="csrf" value="{{ csrf }}"><label class="form-label">Username</label><input name="username" class="form-control mb-3" required autofocus>
+<label class="form-label">Password</label><input type="password" name="password" class="form-control mb-3" required><button class="btn btn-primary w-100">Sign in</button></form></div>{% endblock %}

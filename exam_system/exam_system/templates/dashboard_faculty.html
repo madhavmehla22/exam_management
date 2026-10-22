@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block body %}<h4>Welcome, {{ f.name }}</h4><div class="row g-3 mt-1"><div class="col-lg-5"><div class="card p-3"><h6>Assigned subjects</h6>
+{% for s in subs %}<div class="py-1 border-bottom">{{ s.code }} — {{ s.name }}</div>{% else %}<p class="empty">No subjects assigned yet.</p>{% endfor %}</div></div>
+<div class="col-lg-7"><div class="card p-3"><h6>Examination schedule</h6><table class="table table-sm"><tr><th>Subject</th><th>Date</th><th>Time</th><th>Room</th><th></th></tr>
+{% for e in exams %}<tr><td>{{ e.code }}</td><td>{{ e.exam_date }}</td><td>{{ e.start_time }}</td><td>{{ e.room }}</td><td>{% if e.status=='scheduled' %}<a href="{{ url_for('marks', exam=e.id) }}">Enter marks</a>{% else %}<span class="badge bg-secondary">cancelled</span>{% endif %}</td></tr>{% else %}<tr><td colspan="5" class="empty">No exams scheduled.</td></tr>{% endfor %}</table></div></div></div>{% endblock %}

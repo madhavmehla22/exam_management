@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block body %}<h4>Result management</h4><p class="text-muted">Publishing calculates results: marks ≥ passing marks = PASS; below = FAIL; marked absent = ABSENT (not passed); no marks entered = INCOMPLETE.</p>
+<div class="card"><div class="table-responsive"><table class="table align-middle mb-0"><tr><th>Subject</th><th>Date</th><th>Marks entered</th><th>Passed</th><th>Status</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.code }} — {{ r.sname }}</td><td>{{ r.exam_date }}</td><td>{{ r.entered }} / {{ r.total }}</td><td>{{ r.passed if r.published else '—' }}</td>
+<td>{% if r.published %}<span class="badge bg-success">Published</span>{% else %}<span class="badge bg-secondary">Draft</span>{% endif %}</td><td class="text-end">
+<form method="post" action="{{ url_for('result_action', i=r.id, act='unpublish' if r.published else 'publish') }}" data-confirm="{{ 'Hide these results from students?' if r.published else 'Publish results for ' ~ r.code ~ '? ' ~ (r.total - r.entered) ~ ' student(s) have no marks.' }}">
+<input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-sm {{ 'btn-outline-secondary' if r.published else 'btn-primary' }}">{{ 'Unpublish' if r.published else 'Review & publish' }}</button></form></td></tr>
+{% else %}<tr><td colspan="6" class="empty">No examinations yet.</td></tr>{% endfor %}</table></div></div>{% endblock %}

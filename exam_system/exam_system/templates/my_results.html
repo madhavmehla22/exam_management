@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block body %}<div class="d-flex"><h4 class="me-auto">My results</h4><button class="btn btn-outline-primary no-print" onclick="print()"><i class="fa-solid fa-print"></i> Print</button></div>
+<p>{{ st.name }} · {{ st.student_id }}</p><div class="card"><table class="table mb-0"><tr><th>Subject</th><th>Marks</th><th>Percentage</th><th>Result</th></tr>
+{% for r in rows %}<tr><td>{{ r.code }} — {{ r.sname }}</td><td>{{ r.marks if r.marks is not none else '—' }} / {{ r.emax }}</td><td>{{ r.percentage if r.percentage is not none else '—' }}</td>
+<td><span class="badge bg-{{ 'success' if r.status=='PASS' else 'danger' if r.status=='FAIL' else 'secondary' }}">{{ r.status }}</span></td></tr>
+{% else %}<tr><td colspan="4" class="empty">No results have been published yet.</td></tr>{% endfor %}</table></div>{% endblock %}

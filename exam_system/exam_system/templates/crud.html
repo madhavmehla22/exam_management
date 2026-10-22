@@ -1,0 +1,25 @@
+{% extends 'base.html' %}{% block body %}
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3"><h4 class="me-auto mb-0">{{ c.title }} <span class="badge bg-light text-dark">{{ total }}</span></h4>
+<button class="btn btn-primary" onclick="openForm()"><i class="fa-solid fa-plus"></i> Add</button></div>
+<form class="card p-2 mb-3 d-flex flex-row flex-wrap gap-2"><input name="q" value="{{ args.q or '' }}" class="form-control w-auto" placeholder="Search…">
+{% if 'department_id' in c.filters %}<select name="department_id" class="form-select w-auto"><option value="">All departments</option>{% for d in depts %}<option value="{{ d.id }}" {{ 'selected' if args.department_id==d.id|string }}>{{ d.name }}</option>{% endfor %}</select>{% endif %}
+{% if 'semester' in c.filters %}<select name="semester" class="form-select w-auto"><option value="">All semesters</option>{% for n in range(1,9) %}<option {{ 'selected' if args.semester==n|string }}>{{ n }}</option>{% endfor %}</select>{% endif %}
+<button class="btn btn-outline-primary">Filter</button></form>
+<div class="card"><div class="table-responsive"><table class="table table-hover mb-0 align-middle"><thead><tr>{% for k,l in c.list %}<th>{{ l }}</th>{% endfor %}<th></th></tr></thead><tbody>
+{% for r in rows %}<tr>{% for k,l in c.list %}<td>{{ r[k] if r[k] is not none else '—' }}</td>{% endfor %}<td class="text-nowrap text-end">
+<button class="btn btn-sm btn-light" onclick='openForm({{ r|tojson if false else dict(r)|tojson }}{% if ent=="faculty" %}, {{ (assigned.get(r.id, []))|tojson }}{% endif %})'><i class="fa-solid fa-pen"></i></button>
+{% if ent=='exams' and r.status=='scheduled' %}<form method="post" action="{{ url_for('cancel_exam', i=r.id) }}" class="d-inline" data-confirm="Cancel this examination?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-sm btn-light text-warning"><i class="fa-solid fa-ban"></i></button></form>{% endif %}
+<form method="post" action="{{ url_for('delete', ent=ent, i=r.id) }}" class="d-inline" data-confirm="Delete this record permanently?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-sm btn-light text-danger"><i class="fa-solid fa-trash"></i></button></form></td></tr>
+{% else %}<tr><td colspan="{{ c.list|length+1 }}" class="empty">Nothing here yet. Use “Add” to create the first record.</td></tr>{% endfor %}</tbody></table></div></div>
+{% if pages>1 %}<nav class="mt-3"><ul class="pagination">{% for p in range(1,pages+1) %}<li class="page-item {{ 'active' if p==page }}"><a class="page-link" href="?{{ request.args|urlencode if false else '' }}page={{ p }}&q={{ args.q or '' }}&department_id={{ args.department_id or '' }}&semester={{ args.semester or '' }}">{{ p }}</a></li>{% endfor %}</ul></nav>{% endif %}
+<div class="modal fade" id="m"><div class="modal-dialog"><form method="post" action="{{ url_for('save', ent=ent) }}" class="modal-content"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" id="f_id">
+<div class="modal-header"><h5 class="modal-title">{{ c.title }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">
+{% for n,l,t,req in c.fields %}<label class="form-label mt-2">{{ l }}{{ ' *' if req }}</label>
+{% if t=='dept' %}<select name="{{ n }}" id="f_{{ n }}" class="form-select" {{ 'required' if req }}>{% for d in depts %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+{% elif t=='subject' %}<select name="{{ n }}" id="f_{{ n }}" class="form-select" required>{% for s in subjects %}<option value="{{ s.id }}">{{ s.code }} — {{ s.name }}</option>{% endfor %}</select>
+{% else %}<input name="{{ n }}" id="f_{{ n }}" type="{{ t }}" class="form-control" {{ 'required' if req }}>{% endif %}{% endfor %}
+{% if ent=='faculty' %}<label class="form-label mt-2">Assigned subjects</label><select name="subjects" id="f_subjects" class="form-select" multiple size="5">{% for s in fac_subjects %}<option value="{{ s.id }}">{{ s.code }} — {{ s.name }}</option>{% endfor %}</select>{% endif %}
+</div><div class="modal-footer"><button class="btn btn-primary">Save</button></div></form></div></div>{% endblock %}
+{% block scripts %}<script>const FIELDS={{ c.fields|map(attribute=0)|list|tojson }};
+function openForm(r,subs){document.getElementById('f_id').value=r?r.id:'';FIELDS.forEach(n=>{document.getElementById('f_'+n).value=r&&r[n]!=null?r[n]:''});
+const s=document.getElementById('f_subjects');if(s)[...s.options].forEach(o=>o.selected=(subs||[]).includes(+o.value));new bootstrap.Modal(document.getElementById('m')).show()}</script>{% endblock %}

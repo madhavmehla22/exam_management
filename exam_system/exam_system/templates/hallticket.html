@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block body %}<div class="no-print mb-3"><button class="btn btn-primary" onclick="print()"><i class="fa-solid fa-print"></i> Print hall ticket</button></div>
+<div class="card p-4 ticket"><div class="text-center border-bottom pb-3 mb-3"><div class="logo-ph">LOGO</div><h4 class="mb-0">{{ COLLEGE }}</h4><div>Examination Hall Ticket</div></div>
+<div class="row mb-3"><div class="col-6"><b>Name:</b> {{ st.name }}<br><b>Student ID:</b> {{ st.student_id }}</div><div class="col-6"><b>Course:</b> {{ st.course }}<br><b>Department:</b> {{ st.dept }} · Semester {{ st.semester }}</div></div>
+<table class="table table-bordered"><tr><th>Date</th><th>Time</th><th>Code</th><th>Subject</th><th>Room</th></tr>
+{% for e in exams %}<tr><td>{{ e.exam_date }}</td><td>{{ e.start_time }}</td><td>{{ e.code }}</td><td>{{ e.sname }}</td><td>{{ e.room }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No examinations scheduled, so no hall ticket is available yet.</td></tr>{% endfor %}</table>
+<h6>Instructions</h6><ol class="small"><li>Carry this hall ticket and your college ID card.</li><li>Arrive 20 minutes before the start time.</li><li>Electronic devices are not allowed in the hall.</li><li>Follow the invigilator's directions at all times.</li></ol>
+<div class="d-flex justify-content-between mt-5"><div class="sig">Student signature</div><div class="sig">Controller of Examinations</div></div></div>{% endblock %}

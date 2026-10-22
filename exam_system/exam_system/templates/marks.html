@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block body %}<h4>Marks entry</h4>
+<form class="card p-2 mb-3 d-flex flex-row gap-2"><select name="exam" class="form-select w-auto" onchange="this.form.submit()"><option value="">Select an examination…</option>
+{% for e in exams %}<option value="{{ e.id }}" {{ 'selected' if cur and cur.id==e.id }}>{{ e.code }} — {{ e.sname }} ({{ e.exam_date }})</option>{% endfor %}</select>
+{% if cur %}<input name="q" value="{{ request.args.q or '' }}" class="form-control w-auto" placeholder="Search student"><button class="btn btn-outline-primary">Search</button>{% endif %}</form>
+{% if cur %}<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="exam" value="{{ cur.id }}"><div class="card"><div class="table-responsive"><table class="table align-middle mb-0">
+<tr><th>Student ID</th><th>Name</th><th style="width:140px">Marks / {{ cur.max_marks }}</th><th>Absent</th><th>Last updated</th></tr>
+{% for s in students %}<tr><td>{{ s.student_id }}</td><td>{{ s.name }}</td><td><input class="form-control form-control-sm" type="number" step="0.5" min="0" max="{{ cur.max_marks }}" name="m{{ s.id }}" value="{{ s.marks if s.marks is not none else '' }}" {{ 'disabled' if cur.published }}></td>
+<td><input type="checkbox" class="form-check-input" name="a{{ s.id }}" {{ 'checked' if s.absent }} {{ 'disabled' if cur.published }}></td><td class="small text-muted">{{ s.updated_at or '—' }}</td></tr>
+{% else %}<tr><td colspan="5" class="empty">No students match this examination.</td></tr>{% endfor %}</table></div></div>
+{% if not cur.published %}<button class="btn btn-primary mt-3">Save marks</button>{% endif %}</form>{% else %}<p class="empty">Choose an examination to enter marks.</p>{% endif %}{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block body %}<h4 class="mb-3">Admin dashboard</h4>
+<div class="row g-3 mb-3">{% for k,v in s.items() %}<div class="col-6 col-xl"><div class="card stat p-3"><div class="text-muted small">{{ k }}</div><div class="fs-2 fw-semibold">{{ v }}</div></div></div>{% endfor %}</div>
+<div class="row g-3"><div class="col-lg-6"><div class="card p-3"><h6>Pass percentage by subject</h6>{% if subj %}<canvas id="c1"></canvas>{% else %}<p class="empty">No published results yet.</p>{% endif %}</div></div>
+<div class="col-lg-3"><div class="card p-3"><h6>Result outcomes</h6>{% if dist %}<canvas id="c2"></canvas>{% else %}<p class="empty">No data yet.</p>{% endif %}</div></div>
+<div class="col-lg-3"><div class="card p-3"><h6>Average % by department</h6>{% if perf %}<canvas id="c3"></canvas>{% else %}<p class="empty">No data yet.</p>{% endif %}</div></div></div>
+<div class="card p-3 mt-3"><h6>Recent activity</h6>{% for a in acts %}<div class="py-1 border-bottom small"><b>{{ a.username or 'system' }}</b> — {{ a.action }} <span class="text-muted float-end">{{ a.created_at }}</span></div>{% else %}<p class="empty">No activity yet.</p>{% endfor %}</div>
+{% endblock %}{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script><script>
+const subj={{ subj|tojson }},dist={{ dist|tojson }},perf={{ perf|tojson }},B='#1d4ed8';
+if(subj.length)new Chart(c1,{type:'bar',data:{labels:subj.map(x=>x.code),datasets:[{data:subj.map(x=>x.p),backgroundColor:B}]},options:{plugins:{legend:{display:false}},scales:{y:{max:100}}}});
+if(dist.length)new Chart(c2,{type:'doughnut',data:{labels:dist.map(x=>x.status),datasets:[{data:dist.map(x=>x.c),backgroundColor:['#1d4ed8','#dc2626','#94a3b8','#f59e0b']}]}});
+if(perf.length)new Chart(c3,{type:'bar',data:{labels:perf.map(x=>x.name),datasets:[{data:perf.map(x=>x.a),backgroundColor:'#60a5fa'}]},options:{plugins:{legend:{display:false}},scales:{y:{max:100}}}});
+</script>{% endblock %}

@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block body %}<h4>Examination timetable</h4>
+{% if depts %}<form class="card p-2 mb-3 d-flex flex-row gap-2"><select name="department_id" class="form-select w-auto"><option value="">All departments</option>{% for d in depts %}<option value="{{ d.id }}" {{ 'selected' if args.department_id==d.id|string }}>{{ d.name }}</option>{% endfor %}</select>
+<select name="semester" class="form-select w-auto"><option value="">All semesters</option>{% for n in range(1,9) %}<option {{ 'selected' if args.semester==n|string }}>{{ n }}</option>{% endfor %}</select><button class="btn btn-outline-primary">Filter</button></form>{% endif %}
+{% for day, items in rows|groupby('exam_date') %}<div class="card mb-3"><div class="card-header fw-semibold"><i class="fa-regular fa-calendar"></i> {{ day }}</div><table class="table mb-0"><tr><th>Time</th><th>Subject</th><th>Room</th></tr>
+{% for e in items %}<tr><td>{{ e.start_time }} ({{ e.duration }} min)</td><td>{{ e.code }} — {{ e.sname }}</td><td>{{ e.room }}</td></tr>{% endfor %}</table></div>{% else %}<p class="empty">No examinations scheduled.</p>{% endfor %}{% endblock %}
